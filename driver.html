@@ -1,0 +1,86 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I Stay Trucking — Upload Rate Con</title>
+<style>
+:root{--navy:#1F3864;--gold:#C9A227;--cream:#FBF6E9;--ink:#16213a;--good:#1c7c54;}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:linear-gradient(180deg,#1b2f54,#16243f);
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:#fff;
+display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px}
+.card{background:#fff;color:var(--ink);border-radius:18px;max-width:420px;width:100%;
+box-shadow:0 20px 50px -20px rgba(0,0,0,.5);overflow:hidden}
+.top{background:var(--navy);padding:28px 24px;text-align:center}
+.mark{width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,var(--gold),#a8851b);
+display:inline-grid;place-items:center;color:var(--navy);font-weight:800;font-size:24px}
+.top h1{margin:14px 0 2px;font-size:19px}.top p{margin:0;color:#E7D08f;font-size:13px}
+.body{padding:24px}
+label{font-size:13px;color:#6b6450;font-weight:600;display:block;margin:6px 0}
+input[type=text]{width:100%;padding:12px;border:1px solid #d8d2bf;border-radius:10px;font-size:16px;margin-bottom:14px}
+.drop{border:2px dashed var(--gold);border-radius:14px;padding:34px 16px;text-align:center;background:var(--cream);cursor:pointer}
+.drop.drag{background:#fff7e0}
+.drop .big{font-size:42px}.drop .t{font-weight:700;color:var(--navy);margin-top:8px}.drop .s{font-size:13px;color:#8a8259;margin-top:4px}
+.preview{margin-top:14px;font-size:13px;color:var(--good);font-weight:600}
+button{width:100%;margin-top:18px;background:var(--gold);color:var(--navy);border:none;padding:15px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer}
+button:disabled{opacity:.5}
+.done{text-align:center;padding:30px 10px}
+.done .check{width:64px;height:64px;border-radius:50%;background:var(--good);color:#fff;display:inline-grid;place-items:center;font-size:34px}
+.done h2{color:var(--navy);margin:14px 0 4px}.done p{color:#6b6450;font-size:14px}
+.hint{font-size:11.5px;color:#8a8259;text-align:center;margin-top:14px}
+</style></head><body>
+<div class="card">
+ <div class="top"><div class="mark">IS</div><h1>I Stay Trucking</h1><p>Upload your rate confirmation</p></div>
+ <div class="body" id="body">
+   <label>Your name</label>
+   <input type="text" id="driver" placeholder="Driver name" value="Jehron Robinson">
+   <label>Rate confirmation (photo or PDF)</label>
+   <div class="drop" id="drop">
+     <div class="big">📄</div>
+     <div class="t">Tap to take a photo or upload</div>
+     <div class="s">Rate con, BOL, or POD — JPG, PNG, or PDF</div>
+   </div>
+   <input type="file" id="file" accept="image/*,application/pdf" capture="environment" style="display:none">
+   <div class="preview" id="preview"></div>
+   <button id="send" disabled>Send to office</button>
+   <div class="hint">Your office reviews and logs the load. You don't see the books — just drop your paperwork here after each load.</div>
+ </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://sptshgnjazpceumdghwh.supabase.co";
+const SUPABASE_KEY="sb_publishable_Qx-fXGoRO1XCA9h0rHc9kA_9KzBWo-n";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{db:{schema:"istay"}});
+let fileData=null,fileName=null;
+const drop=document.getElementById("drop"),file=document.getElementById("file"),
+ send=document.getElementById("send"),preview=document.getElementById("preview");
+drop.onclick=()=>file.click();
+["dragover","dragenter"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add("drag");}));
+["dragleave","drop"].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove("drag");}));
+drop.addEventListener("drop",ev=>{if(ev.dataTransfer.files[0])handle(ev.dataTransfer.files[0]);});
+file.onchange=()=>{if(file.files[0])handle(file.files[0]);};
+function handle(f){
+ fileName=f.name||("upload-"+Date.now());
+ const r=new FileReader();
+ r.onload=()=>{fileData=r.result;preview.textContent="✓ "+fileName+" ready";send.disabled=false;};
+ r.readAsDataURL(f);
+}
+send.onclick=async()=>{
+ send.disabled=true;send.textContent="Sending…";
+ const driver=document.getElementById("driver").value.trim()||"Driver";
+ // Store the base64 in raw_note (small files) so the office AI can read it; mark pending
+ try{
+   const {error}=await sb.from("upload_queue").insert({
+     driver, file_name:fileName, status:"pending",
+     file_data: fileData,
+     extracted: null
+   });
+   if(error) throw error;
+   document.getElementById("body").innerHTML=
+     '<div class="done"><div class="check">✓</div><h2>Got it — thank you!</h2>'+
+     '<p>Your rate confirmation was sent to the office. You can close this page.</p>'+
+     '<button onclick="location.reload()">Upload another</button></div>';
+ }catch(e){
+   send.disabled=false;send.textContent="Send to office";
+   alert("Could not send — check your connection and try again.");
+ }
+};
+</script></body></html>

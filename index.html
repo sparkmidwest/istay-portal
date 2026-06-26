@@ -1,0 +1,298 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>I Stay Trucking — Ledger</title>
+<style>
+:root{--navy:#1F3864;--navy2:#2E4A78;--gold:#C9A227;--gold-soft:#E7D08f;--cream:#FBF6E9;--cream2:#F4ECD8;
+--ink:#16213a;--line:#d8d2bf;--good:#1c7c54;--warn:#b4690e;--bad:#9c2a2a;--paper:#fff;
+--shadow:0 1px 0 rgba(0,0,0,.04),0 6px 22px -12px rgba(31,56,100,.35);}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 500px at 80% -10%,#28406f 0%,transparent 60%),linear-gradient(180deg,#1b2f54,#16243f 40%);
+color:var(--ink);font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;min-height:100vh;padding:24px 16px 80px}
+.wrap{max-width:1080px;margin:0 auto}.num{font-variant-numeric:tabular-nums;font-family:ui-monospace,monospace}
+.login{max-width:380px;margin:9vh auto;background:var(--paper);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.login .top{background:var(--navy);padding:26px;text-align:center}
+.login .mark{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--gold),#a8851b);display:inline-grid;place-items:center;color:var(--navy);font-weight:800;font-size:22px}
+.login h1{color:#fff;font-size:18px;margin:12px 0 2px}.login p{color:var(--gold-soft);font-size:12.5px;margin:0}
+.login .body{padding:22px}.login label{font-size:12px;color:#6b6450;font-weight:600;display:block;margin:10px 0 4px}
+.login input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;font:inherit}
+.login button{width:100%;margin-top:16px;background:var(--gold);color:var(--navy);border:none;padding:12px;border-radius:9px;font-weight:700;cursor:pointer}
+.err{color:var(--bad);font-size:12.5px;margin-top:10px;min-height:16px}
+header.app{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:14px}
+.mk{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,var(--gold),#a8851b);display:grid;place-items:center;color:var(--navy);font-weight:800;font-size:20px}
+.brand h1{margin:0;color:#fff;font-size:20px}.brand p{margin:2px 0 0;color:var(--gold-soft);font-size:12.5px}
+.who{display:flex;align-items:center;gap:10px;color:#cfe6d6;font-size:12px}
+.chip{font-size:11.5px;color:#cfe6d6;background:rgba(28,124,84,.18);border:1px solid rgba(28,124,84,.5);padding:5px 10px;border-radius:999px}
+.btn{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#eaf0fb;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600}
+.btn:hover{background:rgba(255,255,255,.16)}.btn.gold{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.tabsbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.toptab{background:rgba(255,255,255,.08);color:#e8eefb;border:1px solid rgba(255,255,255,.16);padding:9px 15px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:700}
+.toptab.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.toptab .badge{background:var(--bad);color:#fff;border-radius:999px;padding:1px 7px;font-size:11px;margin-left:6px}
+.weeks{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.wtab{background:rgba(255,255,255,.08);color:#e8eefb;border:1px solid rgba(255,255,255,.16);padding:8px 13px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600}
+.wtab.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}.wtab.add{background:transparent;border-style:dashed;color:var(--gold-soft)}
+.panel{background:var(--paper);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px}
+.panel>.head{background:var(--navy);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.panel>.head h2{margin:0;font-size:14px;letter-spacing:.4px;text-transform:uppercase}.panel>.head .sub{color:var(--gold-soft);font-size:12px}
+.panel .body{padding:14px 16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--navy2);color:#fff;text-align:left;padding:8px 10px;font-weight:600;font-size:11.5px;text-transform:uppercase}
+th.r,td.r{text-align:right}td{padding:6px 10px;border-bottom:1px solid #eee}
+tr:nth-child(even) td{background:#fbfaf4}td input,td select{width:100%;border:1px solid transparent;background:transparent;font:inherit;padding:4px 6px;border-radius:6px}
+td input:focus{outline:none;border-color:var(--gold);background:#fffdf3}td input.r{text-align:right}
+tfoot td{background:var(--navy)!important;color:#fff;font-weight:700;border:none}
+.del{border:none;background:#f3e3e3;color:var(--bad);width:24px;height:24px;border-radius:6px;cursor:pointer}
+.addrow{margin-top:10px;background:var(--cream2);border:1px dashed var(--gold);color:var(--navy);padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;font-size:12.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.stat{background:linear-gradient(180deg,#fff,#fbf7ea);border:1px solid var(--line);border-radius:12px;padding:14px}
+.stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#7a734f}.stat .v{font-size:24px;font-weight:800;color:var(--navy);margin-top:4px;font-variant-numeric:tabular-nums}.stat .n{font-size:11.5px;color:#8a8259;margin-top:3px}
+.stat.split{background:linear-gradient(180deg,#23396a,#1c2f54);border-color:#16243f}.stat.split .k{color:var(--gold-soft)}.stat.split .v{color:#fff}.stat.split .n{color:#c8d4ee}
+.pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600}.pill.book{background:#e9eefb;color:var(--navy2)}.pill.review{background:#fdf1dc;color:var(--warn)}
+.flag{padding:10px 12px;border-radius:8px;font-size:12.5px;margin-top:12px;border-left:4px solid var(--navy);background:#eef2fb;color:#22335c}
+.note{font-size:12px;color:#7a734f;margin-top:8px;font-style:italic}
+#app{display:none}
+.up{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:10px;background:#fff}
+.up img{width:54px;height:54px;object-fit:cover;border-radius:8px;border:1px solid var(--line)}
+.up .meta{flex:1;font-size:13px}.up .meta b{color:var(--navy)}
+/* assistant */
+.assist{position:fixed;right:20px;bottom:20px;z-index:50}
+.fab{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#a8851b);color:var(--navy);border:none;font-size:24px;cursor:pointer;box-shadow:0 10px 30px -8px rgba(0,0,0,.5)}
+.chatbox{position:fixed;right:20px;bottom:90px;width:370px;max-width:calc(100vw - 40px);height:520px;max-height:calc(100vh - 130px);background:#fff;border-radius:16px;box-shadow:0 24px 60px -20px rgba(0,0,0,.6);display:none;flex-direction:column;overflow:hidden;z-index:50}
+.chatbox .ch{background:var(--navy);color:#fff;padding:12px 14px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.msgs{flex:1;overflow-y:auto;padding:14px;background:#f7f7f2}
+.msg{margin-bottom:10px;font-size:13px;line-height:1.45}
+.msg.u{text-align:right}.msg.u .b{background:var(--navy);color:#fff}
+.msg .b{display:inline-block;padding:9px 12px;border-radius:12px;background:#fff;border:1px solid var(--line);max-width:85%;text-align:left;white-space:pre-wrap}
+.chatin{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line)}
+.chatin input{flex:1;padding:10px;border:1px solid var(--line);border-radius:9px;font:inherit}
+.chatin button{background:var(--gold);color:var(--navy);border:none;border-radius:9px;padding:0 14px;font-weight:700;cursor:pointer}
+.quick{display:flex;gap:6px;flex-wrap:wrap;padding:0 10px 8px}
+.quick button{background:var(--cream2);border:1px solid var(--gold);color:var(--navy);border-radius:999px;padding:5px 10px;font-size:11.5px;cursor:pointer}
+</style></head><body>
+<div class="wrap">
+ <div id="login" class="login"><div class="top"><div class="mark">IS</div><h1>I Stay Trucking</h1><p>Weekly Ledger · secure login</p></div>
+  <div class="body"><label>Email</label><input id="email" type="email" placeholder="you@614management.com">
+   <label>Password</label><input id="pw" type="password" placeholder="••••••••">
+   <button id="signin">Sign in</button><div class="err" id="loginErr"></div></div></div>
+
+ <div id="app">
+  <header class="app"><div class="brand"><div class="mk">IS</div>
+    <div><h1>I Stay Trucking — Weekly Ledger</h1><p>Operating under Prime Route Group OH LLC · Lease-on to Bluegrass</p></div></div>
+    <div class="who"><span class="chip" id="saveChip">Synced</span><span id="userEmail"></span><button class="btn" id="signout">Sign out</button></div>
+  </header>
+  <div class="tabsbar">
+    <button class="toptab active" data-tab="ledger" id="tab-ledger">Ledger</button>
+    <button class="toptab" data-tab="inbox" id="tab-inbox">Driver Uploads <span class="badge" id="inboxCount" style="display:none">0</span></button>
+    <button class="toptab" data-tab="docs" id="tab-docs">Documents</button>
+  </div>
+  <div id="ledgerView"><div class="weeks" id="weeks"></div><button class="btn gold" id="addWeek" style="margin-bottom:14px">+ New week</button><div id="view"></div></div>
+  <div id="inboxView" style="display:none"></div>
+  <div id="docsView" style="display:none"></div>
+ </div>
+</div>
+
+<div class="assist">
+  <div class="chatbox" id="chatbox">
+    <div class="ch"><span>📊 Ledger Assistant</span><span style="cursor:pointer" onclick="toggleChat()">✕</span></div>
+    <div class="msgs" id="msgs"></div>
+    <div class="quick" id="quick">
+      <button onclick="ask('What was my best week?')">Best week?</button>
+      <button onclick="ask('Summarize this week and flag any issues.')">Summarize + flag</button>
+      <button onclick="ask('Draft Jehron\\'s settlement for this week.')">Draft settlement</button>
+      <button onclick="ask('What is outstanding or needs review?')">What\\'s outstanding?</button>
+    </div>
+    <div class="chatin"><input id="chatInput" placeholder="Ask about your numbers…" onkeydown="if(event.key==='Enter')sendChat()"><button onclick="sendChat()">Send</button></div>
+  </div>
+  <button class="fab" id="fab" onclick="toggleChat()">💬</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL="https://sptshgnjazpceumdghwh.supabase.co";
+const SUPABASE_KEY="sb_publishable_Qx-fXGoRO1XCA9h0rHc9kA_9KzBWo-n";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{db:{schema:"istay"}});
+const BG=0.21,DP=0.20;
+const money=n=>(n<0?"-$":"$")+Math.abs(+n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc=s=>(s==null?"":(""+s)).replace(/"/g,"&quot;").replace(/</g,"&lt;");
+let WEEKS=[],current=0,TAB="ledger",UPLOADS=[];
+
+async function init(){const {data:{session}}=await sb.auth.getSession();session?showApp(session):showLogin();
+ sb.auth.onAuthStateChange((_e,s)=>s?showApp(s):showLogin());}
+function showLogin(){document.getElementById("login").style.display="block";document.getElementById("app").style.display="none";}
+async function showApp(s){document.getElementById("login").style.display="none";document.getElementById("app").style.display="block";
+ document.getElementById("userEmail").textContent=s.user.email;await loadAll();await loadUploads();}
+document.getElementById("signin").onclick=async()=>{const email=document.getElementById("email").value.trim(),password=document.getElementById("pw").value;
+ document.getElementById("loginErr").textContent="";const {error}=await sb.auth.signInWithPassword({email,password});
+ if(error)document.getElementById("loginErr").textContent=error.message;};
+document.getElementById("pw").addEventListener("keydown",e=>{if(e.key==="Enter")document.getElementById("signin").click();});
+document.getElementById("signout").onclick=()=>sb.auth.signOut();
+document.getElementById("addWeek").onclick=addWeek;
+document.querySelectorAll(".toptab").forEach(b=>b.onclick=()=>{TAB=b.dataset.tab;
+ document.querySelectorAll(".toptab").forEach(x=>x.classList.remove("active"));b.classList.add("active");
+ document.getElementById("ledgerView").style.display=TAB==="ledger"?"block":"none";
+ document.getElementById("inboxView").style.display=TAB==="inbox"?"block":"none";
+ document.getElementById("docsView").style.display=TAB==="docs"?"block":"none";
+ if(TAB==="inbox")renderInbox();
+ if(TAB==="docs")renderDocs();});
+
+function chip(t,bad){const c=document.getElementById("saveChip");c.textContent=t;c.style.color=bad?"#ffd2d2":"#cfe6d6";}
+async function loadAll(){chip("Loading…");const {data:weeks,error}=await sb.from("weeks").select("*").order("sort_order");
+ if(error){chip("Error",true);return;}
+ for(const w of weeks){const [{data:loads},{data:expenses},{data:di}]=await Promise.all([
+   sb.from("loads").select("*").eq("week_id",w.id).order("sort_order"),
+   sb.from("expenses").select("*").eq("week_id",w.id).order("sort_order"),
+   sb.from("driver_items").select("*").eq("week_id",w.id).order("sort_order")]);
+   w.loads=loads||[];w.expenses=expenses||[];w.driver_items=di||[];}
+ WEEKS=weeks;if(current>=WEEKS.length)current=0;chip("Synced");render();}
+function calc(w){const gross=(w.loads||[]).reduce((s,l)=>s+(+l.gross||0),0),bg=gross*BG,settle=gross-bg,
+ opex=(w.expenses||[]).reduce((s,e)=>s+(+e.amount||0),0),driverPay=gross*DP,
+ ded=(w.driver_items||[]).filter(d=>d.kind==="ded").reduce((s,d)=>s+(+d.amount||0),0),
+ rec=(w.driver_items||[]).filter(d=>d.kind==="rec").reduce((s,d)=>s+(+d.amount||0),0);
+ return {gross,bg,settle,opex,driverPay,ded,rec,netDriver:driverPay-ded,opnet:settle-opex-driverPay,each:(settle-opex-driverPay)/2};}
+const timers={};
+function upd(t,id,f,v){const k=t+id+f;chip("…");clearTimeout(timers[k]);timers[k]=setTimeout(async()=>{const p={};p[f]=v;
+ const {error}=await sb.from(t).update(p).eq("id",id);chip(error?"Save failed":"Synced",!!error);},500);}
+async function addRow(t,r){const {data,error}=await sb.from(t).insert(r).select().single();if(!error)return data;chip("Save failed",true);}
+async function delRow(t,id){chip("…");const {error}=await sb.from(t).delete().eq("id",id);chip(error?"Save failed":"Synced",!!error);}
+
+function weektabs(){const el=document.getElementById("weeks");el.innerHTML="";
+ WEEKS.forEach((w,i)=>{const b=document.createElement("button");b.className="wtab"+(i===current?" active":"");b.textContent=w.label;b.onclick=()=>{current=i;render();};el.appendChild(b);});}
+function render(){if(!WEEKS.length){document.getElementById("view").innerHTML="<div class='panel'><div class='body'>No weeks yet.</div></div>";weektabs();return;}
+ weektabs();const w=WEEKS[current],c=calc(w);
+ document.getElementById("view").innerHTML=`
+ <div class="panel"><div class="head"><h2>${esc(w.label)} · Loads</h2>
+   <span class="sub">Driver: <input id="drv" value="${esc(w.driver||"")}" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:6px;padding:3px 7px;font:inherit;width:150px"> ${esc(w.date_range||"")}</span></div>
+  <div class="body"><table><thead><tr><th>Load #</th><th>Broker</th><th>Lane</th><th>PU</th><th>DEL</th><th class="r">Gross</th><th class="r">BG 21%</th><th class="r">Net PRG</th><th></th></tr></thead>
+   <tbody>${(w.loads||[]).map(l=>{const bg=(+l.gross||0)*BG,net=(+l.gross||0)-bg;return `<tr>
+    <td><input value="${esc(l.load_no)}" oninput="upd('loads','${l.id}','load_no',this.value)">${l.needs_review?' <span class="pill review">review</span>':''}</td>
+    <td><input value="${esc(l.broker)}" oninput="upd('loads','${l.id}','broker',this.value)"></td>
+    <td><input value="${esc(l.lane)}" oninput="upd('loads','${l.id}','lane',this.value)"></td>
+    <td><input value="${esc(l.pickup)}" style="width:60px" oninput="upd('loads','${l.id}','pickup',this.value)"></td>
+    <td><input value="${esc(l.delivery)}" style="width:60px" oninput="upd('loads','${l.id}','delivery',this.value)"></td>
+    <td class="r"><input class="r num" value="${l.gross||""}" oninput="upd('loads','${l.id}','gross',this.value)"></td>
+    <td class="r num">${money(bg)}</td><td class="r num">${money(net)}</td>
+    <td><button class="del" onclick="rm('loads','${l.id}')">×</button></td></tr>`;}).join("")}</tbody>
+   <tfoot><tr><td colspan="5">WEEK TOTALS</td><td class="r num">${money(c.gross)}</td><td class="r num">${money(c.bg)}</td><td class="r num">${money(c.settle)}</td><td></td></tr></tfoot></table>
+   <button class="addrow" onclick="add('loads')">+ Add load</button></div></div>
+ <div class="grid">
+  <div class="stat"><div class="k">Gross loads</div><div class="v">${money(c.gross)}</div><div class="n">${(w.loads||[]).length} load(s)</div></div>
+  <div class="stat"><div class="k">Bluegrass 21%</div><div class="v">${money(c.bg)}</div><div class="n">lease-on commission</div></div>
+  <div class="stat"><div class="k">Net to PRG</div><div class="v">${money(c.settle)}</div><div class="n">deposits to PRG</div></div>
+  <div class="stat"><div class="k">Operating net</div><div class="v">${money(c.opnet)}</div><div class="n">after BG · opex · driver</div></div></div>
+ <div class="panel" style="margin-top:16px"><div class="head"><h2>${esc(w.label)} · Expenses</h2><span class="sub">${money(c.opex)}</span></div>
+  <div class="body"><table><thead><tr><th>Item</th><th class="r">Amount</th><th></th></tr></thead>
+   <tbody>${(w.expenses||[]).map(e=>`<tr><td><input value="${esc(e.item)}" oninput="upd('expenses','${e.id}','item',this.value)"></td>
+    <td class="r"><input class="r num" value="${e.amount||""}" oninput="upd('expenses','${e.id}','amount',this.value)"></td>
+    <td><button class="del" onclick="rm('expenses','${e.id}')">×</button></td></tr>`).join("")}</tbody>
+   <tfoot><tr><td>TOTAL OPEX</td><td class="r num">${money(c.opex)}</td><td></td></tr></tfoot></table>
+   <button class="addrow" onclick="add('expenses')">+ Add expense</button></div></div>
+ <div class="panel"><div class="head"><h2>${esc(w.label)} · Driver — ${esc(w.driver||"")}</h2><span class="sub">20% of gross · 1099</span></div>
+  <div class="body"><table><thead><tr><th>Item</th><th>Type</th><th class="r">Amount</th><th></th></tr></thead>
+   <tbody><tr><td>Gross driver pay (20% of ${money(c.gross)})</td><td><span class="pill book">accrued</span></td><td class="r num">${money(c.driverPay)}</td><td></td></tr>
+   ${(w.driver_items||[]).map(d=>`<tr><td><input value="${esc(d.item)}" oninput="upd('driver_items','${d.id}','item',this.value)"></td>
+    <td><select onchange="upd('driver_items','${d.id}','kind',this.value);setTimeout(loadAll,500)"><option value="ded"${d.kind==="ded"?" selected":""}>Deduction</option><option value="rec"${d.kind==="rec"?" selected":""}>Receivable</option></select></td>
+    <td class="r"><input class="r num" value="${d.amount||""}" oninput="upd('driver_items','${d.id}','amount',this.value)"></td>
+    <td><button class="del" onclick="rm('driver_items','${d.id}')">×</button></td></tr>`).join("")}</tbody>
+   <tfoot><tr><td colspan="2">NET DRIVER PAY</td><td class="r num">${money(c.netDriver)}</td><td></td></tr></tfoot></table>
+   <button class="addrow" onclick="add('driver_items')">+ Add driver item</button>
+   ${c.rec>0?`<div class="note">Receivables pending: <b>${money(c.rec)}</b>.</div>`:""}</div></div>
+ <div class="grid"><div class="stat split"><div class="k">Naomi — 50%</div><div class="v">${money(c.each)}</div><div class="n">operating net split</div></div>
+  <div class="stat split"><div class="k">Sheikh — 50%</div><div class="v">${money(c.each)}</div><div class="n">operating net split</div></div></div>`;
+ document.getElementById("drv").oninput=e=>{w.driver=e.target.value;upd("weeks",w.id,"driver",e.target.value);};}
+window.upd=upd;
+window.add=async(t)=>{const w=WEEKS[current];const base={week_id:w.id,sort_order:(w[t]||[]).length+1};let r;
+ if(t==="loads")r={...base,load_no:"",broker:"",lane:"",pickup:"",delivery:"",gross:0,status:"Booked"};
+ if(t==="expenses")r={...base,item:"",amount:0};if(t==="driver_items")r={...base,item:"",amount:0,kind:"ded"};
+ if(await addRow(t,r))await loadAll();};
+window.rm=async(t,id)=>{await delRow(t,id);await loadAll();};
+async function addWeek(){const n=WEEKS.length+1,last=WEEKS[WEEKS.length-1];
+ if(await addRow("weeks",{label:"Week "+n,date_range:"",driver:last?last.driver:"Jehron Robinson",sort_order:n})){await loadAll();current=WEEKS.length-1;render();}}
+
+/* ---------- DRIVER UPLOADS INBOX + AI EXTRACT ---------- */
+async function loadUploads(){const {data}=await sb.from("upload_queue").select("*").in("status",["pending","extracted"]).order("created_at",{ascending:false});
+ UPLOADS=data||[];const n=UPLOADS.length;const b=document.getElementById("inboxCount");
+ if(n>0){b.style.display="inline-block";b.textContent=n;}else b.style.display="none";if(TAB==="inbox")renderInbox();}
+function renderInbox(){const v=document.getElementById("inboxView");
+ if(!UPLOADS.length){v.innerHTML="<div class='panel'><div class='head'><h2>Driver Uploads</h2></div><div class='body'>No new uploads. When Jehron uploads a rate con, it appears here.</div></div>";return;}
+ v.innerHTML=`<div class="panel"><div class="head"><h2>Driver Uploads — ${UPLOADS.length} pending</h2><span class="sub">AI reads the rate con and posts the load for your review</span></div>
+  <div class="body">${UPLOADS.map(u=>{const ex=u.extracted;return `<div class="up">
+    ${u.file_data&&u.file_data.startsWith("data:image")?`<img src="${u.file_data}">`:'<div style="width:54px;height:54px;border-radius:8px;background:#eef;display:grid;place-items:center">📄</div>'}
+    <div class="meta"><b>${esc(u.driver||"Driver")}</b> · ${esc(u.file_name||"")}<br>
+    ${ex?`<span style="color:var(--good)">Extracted:</span> ${esc(ex.load_no||"?")} · ${esc(ex.broker||"?")} · ${esc(ex.lane||"?")} · $${esc(ex.gross||"?")}`:'<span style="color:#8a8259">Not yet read</span>'}</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+     ${ex?`<button class="btn gold" onclick="postLoad('${u.id}')">Post load</button>`:`<button class="btn gold" onclick="extractOne('${u.id}')">Read with AI</button>`}
+     <button class="btn" onclick="rejectUpload('${u.id}')">Dismiss</button></div></div>`;}).join("")}</div></div>`;}
+
+async function callClaude(messages,system,maxtok){
+ const body={model:"claude-sonnet-4-6",max_tokens:maxtok||1000,messages};
+ if(system)body.system=system;
+ const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+ const d=await r.json();return (d.content||[]).filter(x=>x.type==="text").map(x=>x.text).join("\n");}
+
+window.extractOne=async(id)=>{const u=UPLOADS.find(x=>x.id===id);if(!u||!u.file_data)return alert("No file to read.");
+ chip("Reading…");
+ const isImg=u.file_data.startsWith("data:image");const isPdf=u.file_data.startsWith("data:application/pdf");
+ const media=u.file_data.split(";")[0].replace("data:","");const b64=u.file_data.split(",")[1];
+ const content=[{type:"text",text:"Extract the freight load details from this rate confirmation. Respond ONLY with JSON, no prose, no markdown: {\"load_no\":\"\",\"broker\":\"\",\"lane\":\"PickupCity, ST -> DeliveryCity, ST\",\"pickup\":\"MM/DD\",\"delivery\":\"MM/DD\",\"gross\":0}. gross = the carrier rate/total pay as a number."}];
+ if(isImg)content.unshift({type:"image",source:{type:"base64",media_type:media,data:b64}});
+ else if(isPdf)content.unshift({type:"document",source:{type:"base64",media_type:"application/pdf",data:b64}});
+ try{let txt=await callClaude([{role:"user",content}],null,600);txt=txt.replace(/```json|```/g,"").trim();
+  const ex=JSON.parse(txt);await sb.from("upload_queue").update({extracted:ex,status:"extracted"}).eq("id",id);
+  chip("Synced");await loadUploads();}catch(e){chip("Read failed",true);alert("Couldn't read that one — you can still post it manually.");}};
+
+window.postLoad=async(id)=>{const u=UPLOADS.find(x=>x.id===id);if(!u||!u.extracted)return;const ex=u.extracted;
+ const w=WEEKS[current]||WEEKS[WEEKS.length-1];if(!w)return alert("Create a week first.");
+ await addRow("loads",{week_id:w.id,load_no:ex.load_no||"",broker:ex.broker||"",lane:ex.lane||"",pickup:ex.pickup||"",delivery:ex.delivery||"",gross:+ex.gross||0,status:"Booked",source:"driver-upload",upload_id:id,needs_review:true});
+ await sb.from("upload_queue").update({status:"posted",week_id:w.id}).eq("id",id);
+ await loadUploads();await loadAll();chip("Load posted");};
+window.rejectUpload=async(id)=>{await sb.from("upload_queue").update({status:"rejected"}).eq("id",id);await loadUploads();};
+
+/* ---------- DOCUMENTS LIBRARY ---------- */
+const DOC_LIB={
+ internal:[
+  {name:"Operating Procedures (SOP)",file:"IST_SOP.docx",desc:"Management-company model, revenue waterfall, weekly settlement"},
+  {name:"Owner's Handoff & Operating Manual",file:"Owners_Handoff_Operating_Manual.docx",desc:"Keys-to-the-business owner manual"},
+  {name:"Company Info & Contact",file:"IST_Contact_Info.docx",desc:"Business line 614-479-5756, address, hours"},
+  {name:"Privacy Policy",file:"IST_Privacy_Policy.docx",desc:"Data handling & privacy"},
+  {name:"Expenses & Reimbursables",file:"Company_Expenses_and_Reimbursables.xlsx",desc:"Operating costs, salary, per-company billing"},
+ ],
+ client:[
+  {name:"Carrier-in-a-Box \u2014 Package Pricing",file:"CarrierInABox_Package_Pricing.pdf",desc:"3 tiers: Starter $7.5k / Growth $15k / Empire $25k"},
+  {name:"Sample Client \u2014 Growth ($15k)",file:"CarrierInABox_Sample_Client.docx",desc:"One-truck owner walkthrough + staffing"},
+  {name:"Sample Client \u2014 Empire ($25k)",file:"CarrierInABox_Sample_Empire.docx",desc:"Two-truck corporation + operations manager"},
+  {name:"Onboarding Workflow Playbook",file:"Carrier_Onboarding_Workflow_Playbook.docx",desc:"9-phase build system, roles, templates"},
+ ]
+};
+function docCard(d){
+ return `<div class="up"><div style="width:46px;height:46px;border-radius:8px;background:#eef;display:grid;place-items:center;font-size:20px">\ud83d\udcc4</div>
+  <div class="meta"><b>${esc(d.name)}</b><br><span style="color:#8a8259">${esc(d.desc)}</span><br><span style="font-size:11px;color:#b0a98a">${esc(d.file)}</span></div>
+  <a class="btn gold" href="docs/${esc(d.file)}" download style="text-decoration:none;text-align:center">Download</a></div>`;
+}
+function renderDocs(){
+ const v=document.getElementById("docsView");
+ v.innerHTML=`
+ <div class="panel"><div class="head"><h2>Internal Documents</h2><span class="sub">Operating \u2014 owner/admin only</span></div>
+  <div class="body">${DOC_LIB.internal.map(docCard).join("")}</div></div>
+ <div class="panel"><div class="head"><h2>Client-Facing \u2014 Carrier-in-a-Box</h2><span class="sub">Shareable product & sales docs</span></div>
+  <div class="body">${DOC_LIB.client.map(docCard).join("")}</div></div>
+ <div class="panel"><div class="body" style="font-size:12px;color:#8a8259">Documents download from the <b>docs/</b> folder bundled with this portal. When Supabase Storage is connected, uploads and live versioning can be added here. Private legal/billing agreements are intentionally kept out of the portal.</div></div>`;
+}
+
+/* ---------- ASSISTANT ---------- */
+let CHAT=[];
+function toggleChat(){const b=document.getElementById("chatbox");b.style.display=b.style.display==="flex"?"none":"flex";
+ if(b.style.display==="flex"&&!CHAT.length)pushMsg("a","Hi Naomi — ask me about your loads, weeks, settlements, or what's outstanding. I read your live ledger.");}
+function pushMsg(who,txt){CHAT.push({who,txt});const m=document.getElementById("msgs");
+ m.innerHTML+=`<div class="msg ${who==='u'?'u':''}"><span class="b">${esc(txt)}</span></div>`;m.scrollTop=m.scrollHeight;}
+window.ask=(q)=>{document.getElementById("chatInput").value=q;sendChat();};
+async function sendChat(){const inp=document.getElementById("chatInput");const q=inp.value.trim();if(!q)return;inp.value="";
+ pushMsg("u",q);pushMsg("a","…thinking");
+ const snapshot=WEEKS.map(w=>{const c=calc(w);return {week:w.label,driver:w.driver,loads:(w.loads||[]).map(l=>({load:l.load_no,broker:l.broker,lane:l.lane,gross:+l.gross||0,review:l.needs_review})),
+  gross:c.gross,bluegrass:c.bg,net_to_prg:c.settle,opex:c.opex,driver_pay:c.driverPay,driver_deductions:c.ded,net_driver_pay:c.netDriver,receivables:c.rec,operating_net:c.opnet,each_split:c.each};});
+ const system="You are the I Stay Trucking ledger assistant for Naomi (CFO). You help with: answering questions about her numbers, summarizing weeks and flagging issues (missing invoices, loads needing review, authority mismatches, high receivables), and drafting driver settlements and invoices. Be concise, concrete, and use the actual numbers. Money in USD. Bluegrass takes 21% all-in (lease-on); driver pay is 20% of gross; operating net splits 50/50. Current week index: "+current+" ("+(WEEKS[current]?WEEKS[current].label:"")+"). Here is the full ledger as JSON:\n"+JSON.stringify(snapshot);
+ try{const reply=await callClaude([{role:"user",content:q}],system,1200);
+  CHAT.pop();document.getElementById("msgs").lastChild.remove();pushMsg("a",reply||"(no response)");}
+ catch(e){document.getElementById("msgs").lastChild.remove();pushMsg("a","I couldn't reach the AI service. If this is the deployed site, the Claude API key needs to be configured.");}}
+init();
+</script></body></html>
